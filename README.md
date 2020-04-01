@@ -87,6 +87,48 @@ FRESULTS(I1,I2,R) AS (
 )
 SELECT * FROM FRESULTS;
 ```
+## Pascal's Triangle
+This is a [Pascal's Triangle](https://en.wikipedia.org/wiki/Pascal%27s_triangle "Pascal's Triangle") implementation like [the one from HackerRank](https://www.hackerrank.com/challenges/pascals-triangle/problem "the one from HackerRank").
+
+We use a recursive WITH using a REMaining field with the values of the last step that are poped from the string (first and second numbers from REM are added, the result of the addition is inserted to N, the first number from REM is poped, and repeat until REM='')
+
+```sql
+WITH P(N,ROW,IT,REM) AS (
+SELECT '1',1,1,''
+UNION ALL
+SELECT CASE WHEN REM='' THEN '1' ELSE N||' '||	--FIRST VALUE ALWAYS 1
+	CASE WHEN instr(REM, ' ')=0 THEN REM		--IF REM ONLY HAS A NUMBER(1) CONCAT N THIS VALUE
+	ELSE substr(REM, 1, instr(REM, ' ')-1) +	--ELSE CONCAT SUM OF FIRST 2 NUMBERS OF REM
+		CASE WHEN instr(substr(REM, instr(REM, ' ')+1),' ')=0 THEN substr(REM, instr(REM, ' ')+1) ELSE
+		substr( substr(REM, instr(REM, ' ')+1),1,instr( substr(REM, instr(REM, ' ')+1),' ')-1) END
+	END
+END,
+CASE WHEN REM='' THEN ROW+1 ELSE ROW END,
+CASE WHEN REM='' THEN 1 ELSE IT+1 END,
+CASE WHEN REM='' THEN N WHEN instr(REM, ' ')=0 THEN '' ELSE substr(REM, instr(REM, ' ')+1) END --POP FIRST NUMBER FROM REM / SET IT TO PREVIOUS N
+FROM P
+WHERE ROW<=15
+)
+SELECT N FROM P WHERE ROW=IT;
+```
+
+This query generates the following result:
+
+    1
+    1 1
+    1 2 1
+    1 3 3 1
+    1 4 6 4 1
+    1 5 10 10 5 1
+    1 6 15 20 15 6 1
+    1 7 21 35 35 21 7 1
+    1 8 28 56 70 56 28 8 1
+    1 9 36 84 126 126 84 36 9 1
+    1 10 45 120 210 252 210 120 45 10 1
+    1 11 55 165 330 462 462 330 165 55 11 1
+    1 12 66 220 495 792 924 792 495 220 66 12 1
+    1 13 78 286 715 1287 1716 1716 1287 715 286 78 13 1
+    1 14 91 364 1001 2002 3003 3432 3003 2002 1001 364 91 14 1
 
 ## Next Gen Coder Challenge \#38
 [Coding challenge 38 from NextGenCoder](https://www.instagram.com/p/B-SgN6jAtkt/ "NextGenCoder"):
